@@ -1,24 +1,32 @@
-import { useSession } from '@/context/ctx';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { router } from 'expo-router';
 import React, { useState } from 'react';
-
+import { Text, View, TextInput, Button, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { useSession } from '@/context/ctx';
+ 
 export default function SignIn() {
-  const { signIn } = useSession();
+  const { signUp } = useSession();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+ 
   const handleSignIn = () => {
     // Call your signIn function with email and password
-    // signIn({ email, password });
-    signIn();
+    signUp({ name, email, password, passwordConfirmation });
     // Navigate after signing in
     router.replace('/');
   };
-
+ 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
+      <Text style={styles.title}>Sign Up</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
+        autoCapitalize="none"
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -34,20 +42,27 @@ export default function SignIn() {
         onChangeText={setPassword}
         secureTextEntry
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Password Confirmation"
+        value={passwordConfirmation}
+        onChangeText={setPasswordConfirmation}
+        secureTextEntry
+      />
       <View style={styles.button}>
-        <Text style={styles.signin} onPress={handleSignIn}>
-        Sign In
-        </Text>
+        <Text onPress={handleSignIn} style={styles.signup}>
+            Create an Account
+        </Text> 
       </View>
       <View style={styles.button}>
-        <Text style={styles.signup} onPress={() => router.push('/sign-up')}>
-        Create an Account
+        <Text onPress={() => router.push('/sign-in')} style={styles.backToLogin}>
+            Back to Login
         </Text>
       </View>
     </View>
   );
 }
-
+ 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -73,22 +88,21 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
   },
-  signin: {
+  signup: {
     padding: 14,
     backgroundColor: '#007BFF',
     borderRadius: 8,
+    textTransform: 'uppercase',
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  signup: {
-    width: '100%',
-    padding: 8,
-    backgroundColor: '#28A745',
-    borderRadius: 8,
-    color: '#fff',
-    fontWeight: 'bold',
+  backToLogin: {
     marginTop: 12,
+    width: '100%',
+    color: '#333333',
+    fontWeight: 'bold',
     textAlign: 'center',
+    textTransform: 'uppercase',
   }
 });
