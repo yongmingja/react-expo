@@ -1,16 +1,20 @@
-import { useContext, createContext, type PropsWithChildren } from 'react';
 import { useStorageState } from '@/hooks/useStorageState';
- 
+import { login, register } from '@/services/api';
+import { router, useRouter } from 'expo-router';
+import { createContext, useContext, type PropsWithChildren } from 'react';
+import { Alert } from 'react-native';
+import { setSession, clearSession } from "@/services/auth"; 
+
 const AuthContext = createContext<{
-    signIn: () => void;
+    signIn: (data: object) => void;
     signOut: () => void;
-    signUp: () => void;
+    signUp: (data: object) => void;
     session?: string | null;
     isLoading: boolean;
 }>({
-    signIn: () => null,
+    signIn: (data) => null,
     signOut: () => null,
-    signUp: () => null,
+    signUp: (data) => null,
     session: null,
     isLoading: false,
 });
@@ -28,22 +32,42 @@ export function useSession() {
 }
  
 export function SessionProvider({ children }: PropsWithChildren) {
-    const [[isLoading, session], setSession] = useStorageState('session');
- 
+    const router = useRouter(); 
+    const [[isLoading, session], setSessionState] = useStorageState("session"); 
+
     return (
         <AuthContext.Provider
             value={{
-                signIn: () => {
+                signIn: (data) => {
                     // Perform sign-in logic here
-                    setSession('xxx');
+                    login(data)
+                    .then((response) => {
+                        setSessionState(response); 
+                        setSession(response); // Save session securely
+                        router.replace('/');
+                    })
+                    .catch((error) => {
+                        Alert.alert('Error while signing in', error.message);
+                    });
                 },
-                signUp: () => {
+                signUp: (data) => {
                     // Perform sign-up logic here
-                    setSession('xxx');
+                    
+                    register(data)
+                        .then((response) => {
+                          setSessionState(response); 
+                          setSession(response);
+                          router.replace('/');
+                        })
+                        .catch((error) => {
+                          Alert.alert('Error while signing up', error.message);
+                        });
+                        
                 },
                 signOut: () => {
-                    // Set session to null to logout
-                    setSession(null);
+                    clearSession(); // Clear session securely// 
+                    setSessionState(null); 
+                    router.replace("/sign-in"); // Redirect to login page// 
                 },
                 session,
                 isLoading,

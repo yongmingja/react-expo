@@ -1,5 +1,5 @@
 import { useSession } from '@/context/ctx';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 
@@ -10,8 +10,7 @@ export default function SignIn() {
 
   const handleSignIn = () => {
     // Call your signIn function with email and password
-    // signIn({ email, password });
-    signIn();
+    signIn({ email, password });
     // Navigate after signing in
     router.replace('/');
   };
